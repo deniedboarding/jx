@@ -1,6 +1,7 @@
 package cmd
 
 import (
+	"github.com/jenkins-x/jx/pkg/apis/jenkins.io/v1"
 	"io"
 	"strings"
 
@@ -23,15 +24,37 @@ const (
 
 // NewJXCommand creates the `jx` command and its nested children.
 func NewJXCommand(f Factory, in terminal.FileReader, out terminal.FileWriter, err io.Writer) *cobra.Command {
+	bash_completion_func := `
+
+__jx_get_env() {
+	local jx_out
+    if jx_out=$(jx get env | tail -n +2 | cut -d' ' -f1 2>/dev/null); then
+        COMPREPLY=( $( compgen -W "${jx_out[*]}" -- "$cur" ) )
+    fi
+}
+
+__jx_get_promotionstrategies() {
+	COMPREPLY=( $(compgen -W "` + strings.Join(v1.PromotionStrategyTypeValues, " ") + `" -- ${cur}) )
+}
+
+__custom_func() {
+    case ${last_command} in
+        jx_get_env* )
+            __jx_get_env
+            return
+            ;;
+        *)
+            ;;
+    esac
+}
+`
 	cmds := &cobra.Command{
 		Use:   "jx",
 		Short: "jx is a command line tool for working with Jenkins X",
 		Long: `
  `,
 		Run: runHelp,
-		/*
-			BashCompletionFunction: bash_completion_func,
-		*/
+		BashCompletionFunction: bash_completion_func,
 	}
 
 	createCommands := NewCmdCreate(f, in, out, err)

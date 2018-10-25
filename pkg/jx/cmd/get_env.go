@@ -66,6 +66,7 @@ func NewCmdGetEnv(f Factory, in terminal.FileReader, out terminal.FileWriter, er
 	options.addGetFlags(cmd)
 
 	cmd.Flags().StringVarP(&options.PromotionStrategy, "promote", "p", "", "Filters the environments by promotion strategy. Possible values: "+strings.Join(v1.PromotionStrategyTypeValues, ", "))
+	cmd.Flags().SetAnnotation("promote", cobra.BashCompCustom, []string{"__jx_get_promotionstrategies"})
 
 	return cmd
 }
