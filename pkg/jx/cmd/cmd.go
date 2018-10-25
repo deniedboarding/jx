@@ -39,7 +39,7 @@ __jx_get_promotionstrategies() {
 
 __custom_func() {
     case ${last_command} in
-        jx_get_env* )
+        jx_get_environments )
             __jx_get_env
             return
             ;;
