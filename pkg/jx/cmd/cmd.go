@@ -24,8 +24,9 @@ const (
 
 // NewJXCommand creates the `jx` command and its nested children.
 func NewJXCommand(f Factory, in terminal.FileReader, out terminal.FileWriter, err io.Writer) *cobra.Command {
+	// Is is likely that the user has the completions for kubectl loaded, so reusing function from there if they exist
+	// TODO: Ought to wait to make a pull request until next version of cobra is released with the fix to spf13/cobra#694.
 	bash_completion_func := `
-
 __jx_get_env() {
 	local jx_out
     if jx_out=$(jx get env | tail -n +2 | cut -d' ' -f1 2>/dev/null); then
@@ -43,6 +44,10 @@ __custom_func() {
             __jx_get_env
             return
             ;;
+		jx_namespace )
+			declare -f __kubectl_get_resource_namespace > /dev/null && __kubectl_get_resource_namespace
+			return
+			;;
         *)
             ;;
     esac
