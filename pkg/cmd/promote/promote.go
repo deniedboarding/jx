@@ -542,9 +542,11 @@ func (o *PromoteOptions) GetTargetNamespace(ns string, env string) (string, *v1.
 
 	labels := map[string]string{}
 	annotations := map[string]string{}
-	err = kube.EnsureNamespaceCreated(kubeClient, targetNS, labels, annotations)
-	if err != nil {
-		return "", nil, err
+	if envResource == nil || !envResource.Spec.RemoteCluster {
+		err = kube.EnsureNamespaceCreated(kubeClient, targetNS, labels, annotations)
+		if err != nil {
+			return "", nil, err
+		}
 	}
 	return targetNS, envResource, nil
 }
